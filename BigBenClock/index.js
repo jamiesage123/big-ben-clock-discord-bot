@@ -97,64 +97,40 @@ class BigBenClock {
      * Create the scheduler
      */
     createScheduler() {
-        // 9 scheduler
-        schedule.scheduleJob('00 21 * * *', () => {
-            // Get all servers
-            this.database.all("SELECT * FROM servers").then((servers) => {
-                // Loop through the servers
-                servers.forEach((server) => {
-                    // Attempt to find the guild
-                    let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
+        let scheduleTimes = [
+            {cron: '00 21 * * *', file: './Assets/9.mp3'},
+            {cron: '00 00 * * *', file: './Assets/midnight.mp3'}
+        ];
 
-                    if (guild) {
-                        // Find the channel in the server
-                        let channel = guild.channels.find((channel) => channel.id === server.channel_id);
+        scheduleTimes.forEach((time) => {
+            schedule.scheduleJob(time.cron, () => {
+                // Get all servers
+                this.database.all("SELECT * FROM servers").then((servers) => {
+                    // Loop through the servers
+                    servers.forEach((server) => {
+                        // Attempt to find the guild
+                        let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
 
-                        if (channel) {
-                            // Play the midnight sound
-                            channel.join().then((connection) => {
-                                const dispatcher = connection.playFile('./Assets/9.mp3');
+                        if (guild) {
+                            // Find the channel in the server
+                            let channel = guild.channels.find((channel) => channel.id === server.channel_id);
 
-                                // Leave the channel once we're done
-                                dispatcher.on("end", (end) => {
-                                    channel.leave();
+                            if (channel) {
+                                // Play the midnight sound
+                                channel.join().then((connection) => {
+                                    const dispatcher = connection.playFile(time.file);
+
+                                    // Leave the channel once we're done
+                                    dispatcher.on("end", (end) => {
+                                        channel.leave();
+                                    });
                                 });
-                            });
+                            }
                         }
-                    }
+                    });
                 });
             });
         });
-
-        // Midnight scheduler
-        schedule.scheduleJob('00 00 * * *', () => {
-            // Get all servers
-            this.database.all("SELECT * FROM servers").then((servers) => {
-                // Loop through the servers
-                servers.forEach((server) => {
-                    // Attempt to find the guild
-                    let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
-
-                    if (guild) {
-                        // Find the channel in the server
-                        let channel = guild.channels.find((channel) => channel.id === server.channel_id);
-
-                        if (channel) {
-                            // Play the midnight sound
-                            channel.join().then((connection) => {
-                                const dispatcher = connection.playFile('./Assets/midnight.mp3');
-
-                                // Leave the channel once we're done
-                                dispatcher.on("end", (end) => {
-                                    channel.leave();
-                                });
-                            });
-                        }
-                    }
-                });
-            });
-        });
-
     }
 }
 
