@@ -69,15 +69,12 @@ class BigBenClock {
 
             // Set a voice channel as the "big ben clock" channel
             if (message.content.trim().startsWith(prefix)) {
-                // Fetch the arguments of the command
-                const args = message.content.replace(`${prefix} `, "").split(" ");
-
-                // Channel name
-                let channelName = args[0];
+                // Fetch the channel name fromm the arguments
+                let channelName = message.content.replace(`${prefix} `, "").trim();
 
                 // Attempt to find the voice channel
                 let voiceChannel = message.guild.channels.find((channel) => {
-                    return channel.name === channelName.trim() && channel.type === "voice";
+                    return channel.name === channelName && channel.type === "voice";
                 });
 
                 if (voiceChannel) {
