@@ -1,5 +1,5 @@
 # Big Ben Clock Discord bot
-This repository contains the source code for a discord bot that chimes every night at midnight (GMT)
+This repository contains the source code for a discord bot that chimes every hour of the day.
 
 ## Installation
 This bot is written to run on top of node.js. Please see [https://nodejs.org/](https://nodejs.org/en/download/) for more information on node.js.

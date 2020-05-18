@@ -97,37 +97,34 @@ class BigBenClock {
      * Create the scheduler
      */
     createScheduler() {
-        let scheduleTimes = [
-            {cron: '00 21 * * *', file: './Assets/9.mp3'},
-            {cron: '00 00 * * *', file: './Assets/midnight.mp3'}
-        ];
+        // Schedule a job for every hour
+        schedule.scheduleJob('0 * * * *', () => {
+            // Get the hour
+            let hour = moment().format('h');
 
-        scheduleTimes.forEach((time) => {
-            schedule.scheduleJob(time.cron, () => {
-                // Get all servers
-                this.database.all("SELECT * FROM servers").then((servers) => {
-                    // Loop through the servers
-                    servers.forEach((server) => {
-                        // Attempt to find the guild
-                        let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
+            // Get all servers
+            this.database.all("SELECT * FROM servers").then((servers) => {
+                // Loop through the servers
+                servers.forEach((server) => {
+                    // Attempt to find the guild
+                    let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
 
-                        if (guild) {
-                            // Find the channel in the server
-                            let channel = guild.channels.find((channel) => channel.id === server.channel_id);
+                    if (guild) {
+                        // Find the channel in the server
+                        let channel = guild.channels.find((channel) => channel.id === server.channel_id);
 
-                            if (channel) {
-                                // Play the midnight sound
-                                channel.join().then((connection) => {
-                                    const dispatcher = connection.playFile(time.file);
+                        if (channel) {
+                            // Play the midnight sound
+                            channel.join().then((connection) => {
+                                const dispatcher = connection.playFile(`./Assets/${hour}.mp3`);
 
-                                    // Leave the channel once we're done
-                                    dispatcher.on("end", (end) => {
-                                        channel.leave();
-                                    });
+                                // Leave the channel once we're done
+                                dispatcher.on("end", () => {
+                                    channel.leave();
                                 });
-                            }
+                            });
                         }
-                    });
+                    }
                 });
             });
         });
