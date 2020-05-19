@@ -113,7 +113,7 @@ class BigBenClock {
                         // Find the channel in the server
                         let channel = guild.channels.find((channel) => channel.id === server.channel_id);
 
-                        if (channel && channel.members.length > 0) {
+                        if (channel && channel.members.array().length > 0) {
                             // Play the chime
                             channel.join().then((connection) => {
                                 const dispatcher = connection.playFile(`./Assets/${hour}.mp3`);
