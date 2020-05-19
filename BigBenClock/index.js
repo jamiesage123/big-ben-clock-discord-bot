@@ -120,6 +120,8 @@ class BigBenClock {
                             message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
                         }
                     });
+                } else {
+                    message.channel.send("Available commands:\n\n!bigbenclock set <voice channel name>\n!bigbenclock frequency <1-12>");
                 }
             }
         });

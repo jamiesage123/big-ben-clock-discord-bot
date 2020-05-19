@@ -16,4 +16,5 @@ Now, run `npm run start` to start the bot.
 You will need to invite the bot to your server. The bot needs at least "Connect" and "Speak" permissions.
 
 ## Commands
-`!bigbenclock <voice channel name>` - Set a voice channel as the "big ben clock"
+`!bigbenclock set <voice channel name>` - Set a voice channel as the "Big Ben clock voice channel"  
+`!bigbenclock frequency <1-12>` - Set the frequency of Big Bens chimes
