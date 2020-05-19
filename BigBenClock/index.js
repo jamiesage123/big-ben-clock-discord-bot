@@ -15,7 +15,7 @@ class BigBenClock {
         this.botToken = process.env.BOT_TOKEN;
 
         // Database instance
-        this.database = new Database('./database.sqlite');
+        this.database = new Database(process.env.DATABASE_URL);
 
         // Create the bot
         this.bot = new Discord.Client();
@@ -50,9 +50,6 @@ class BigBenClock {
 
         // Initialise the database
         await this.database.init();
-
-        // Migrate the database
-        await this.database.migrate();
 
         // Log the bot in
         await this.bot.login(this.botToken);
@@ -100,7 +97,7 @@ class BigBenClock {
                 } else if (command === "frequency") {
                     // Find the servers record
                     this.database.getServer(message.guild.id).then((response) => {
-                        let server = response[0];
+                        let server = response.rows[0];
 
                         if (server && !_.isEmpty(server.channel_id)) {
                             let frequency = parseInt(args.join());
@@ -139,7 +136,9 @@ class BigBenClock {
             console.info(`Running schedule at ${moment().format('Y-m-d H:m:s')}`);
 
             // Get all servers
-            this.database.getAllServers().then((servers) => {
+            this.database.getAllServers().then((response) => {
+                let servers = response.rows;
+
                 // Loop through the servers
                 servers.forEach((server) => {
                     // Attempt to find the guild

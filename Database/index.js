@@ -1,17 +1,14 @@
-const sqlite = require('sqlite');
-const SqliteDefaults = require('./SqliteDefaults');
+const { Client } = require('pg')
 const moment = require('moment');
 
-class Database extends SqliteDefaults {
+class Database {
     /**
      * Database constructor
-     * @param databaseFile
+     * @param connectionString
      */
-    constructor(databaseFile) {
-        super();
-
-        // Database file location
-        this.databaseFile = databaseFile;
+    constructor(connectionString) {
+        // connection URI
+        this.connectionString = connectionString;
 
         // Database instance
         this.db = null;
@@ -22,7 +19,10 @@ class Database extends SqliteDefaults {
      * @returns {Promise<void>}
      */
     async init() {
-        this.db = await sqlite.open(this.databaseFile);
+        this.db = new Client({ connectionString: this.connectionString });
+
+        // Attempt to connect
+        await this.db.connect();
     }
 
     /**
@@ -32,7 +32,7 @@ class Database extends SqliteDefaults {
      * @returns {Promise<Statement>}
      */
     addServer(serverId, channelId) {
-        return this.run("INSERT INTO servers (server_id, channel_id, created_at)VALUES(?, ?, ?)", serverId, channelId, moment().format('Y-m-d H:m:s'));
+        return this.db.query("INSERT INTO servers (server_id, channel_id, created_at)VALUES($1, $2, $3)", [serverId, channelId, moment().format('Y-m-d H:m:s')]);
     }
 
     /**
@@ -40,7 +40,7 @@ class Database extends SqliteDefaults {
      * @returns {*}
      */
     getAllServers() {
-        return this.all("SELECT * FROM servers");
+        return this.db.query("SELECT * FROM servers");
     }
 
     /**
@@ -49,7 +49,7 @@ class Database extends SqliteDefaults {
      * @returns {*}
      */
     getServer(serverId) {
-        return this.all("SELECT * FROM servers WHERE server_id = ?", serverId);
+        return this.db.query("SELECT * FROM servers WHERE server_id = $1", [serverId]);
     }
 
     /**
@@ -59,7 +59,7 @@ class Database extends SqliteDefaults {
      * @returns {Promise<Statement>}
      */
     setServerFrequency(serverId, frequency) {
-        return this.run("UPDATE servers SET frequency = ? WHERE server_id = ?", frequency, serverId);
+        return this.db.query("UPDATE servers SET frequency = $1 WHERE server_id = $2", [frequency, serverId]);
     }
 
     /**
@@ -68,7 +68,7 @@ class Database extends SqliteDefaults {
      * @returns {Promise<Statement>}
      */
     deleteServer(serverId) {
-        return this.run("DELETE FROM servers WHERE server_id = ?", serverId);
+        return this.db.query("DELETE FROM servers WHERE server_id = $1", [serverId]);
     }
 }
 
