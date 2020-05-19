@@ -97,6 +97,29 @@ class BigBenClock {
                     } else {
                         message.channel.send(`Could not find voice channel '${channelName}'`);
                     }
+                } else if (command === "frequency") {
+                    // Find the servers record
+                    this.database.all("SELECT * FROM servers WHERE server_id = ?", message.guild.id).then((response) => {
+                        let server = response[0];
+
+                        if (server && !_.isEmpty(server.channel_id)) {
+                            let frequency = parseInt(args.join());
+
+                            // Update the frequency
+                            if (_.inRange(frequency, 1, 13)) {
+                                this.database.run("UPDATE servers SET frequency = ? WHERE server_id = ?", frequency, message.guild.id);
+
+                                // Calculate the times that are now active
+                                let times = _.range(1, 13).filter((hour) => hour % frequency === 0);
+
+                                message.channel.send(`Big Ben will now chime at: ${times.join(" O'Clock, ").trim()} O'Clock`);
+                            } else {
+                                message.channel.send("Frequency must be between 1 and 12 (For example: a frequency of 3 would chime at 3 O'Clock, 6 O'Clock, 9 O'Clock and 12 O'Clock)");
+                            }
+                        } else {
+                            message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
+                        }
+                    });
                 }
             }
         });
@@ -120,7 +143,10 @@ class BigBenClock {
                     // Attempt to find the guild
                     let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
 
-                    if (guild) {
+                    // Determine if we should play a chime based on the servers frequency setting
+                    let playChimes = server.frequency !== null ? hour % server.frequency === 0 : true;
+
+                    if (guild && playChimes) {
                         // Find the channel in the server
                         let channel = guild.channels.find((channel) => channel.id === server.channel_id);
 
@@ -145,6 +171,13 @@ class BigBenClock {
                                 // TODO: Delete record as channel no longer exists
                                 console.info(`Channel ${channel.id} does not exist`);
                             }
+                        }
+                    } else {
+                        if (guild) {
+                            console.info(`Deferring chime on server ${guild.id}. Frequency: ${server.frequency}`);
+                        } else {
+                            // TODO: Delete record as server no longer exists
+                            console.info(`Server ${server.id} does not exist`);
                         }
                     }
                 });
