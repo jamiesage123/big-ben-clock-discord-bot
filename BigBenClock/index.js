@@ -111,6 +111,8 @@ class BigBenClock {
             // Get the hour
             let hour = moment().format('h');
 
+            console.info(`Running schedule at ${moment().format('Y-m-d H:m:s')}`);
+
             // Get all servers
             this.database.all("SELECT * FROM servers").then((servers) => {
                 // Loop through the servers
@@ -122,16 +124,27 @@ class BigBenClock {
                         // Find the channel in the server
                         let channel = guild.channels.find((channel) => channel.id === server.channel_id);
 
+                        console.info(`Attempting to join channel ${channel.id} on server ${guild.id}`);
+
                         if (channel && channel.members.array().length > 0) {
                             // Play the chime
                             channel.join().then((connection) => {
                                 const dispatcher = connection.playFile(`./Assets/${hour}.mp3`);
+
+                                console.info(`Playing ./Assets/${hour}.mp3 in channel ${channel.id}`);
 
                                 // Leave the channel once we're done
                                 dispatcher.on("end", () => {
                                     channel.leave();
                                 });
                             });
+                        } else {
+                            if (channel) {
+                                console.info(`Channel ${channel.id} does not have any members`);
+                            } else {
+                                // TODO: Delete record as channel no longer exists
+                                console.info(`Channel ${channel.id} does not exist`);
+                            }
                         }
                     }
                 });
