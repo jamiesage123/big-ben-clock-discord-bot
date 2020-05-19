@@ -69,25 +69,34 @@ class BigBenClock {
 
             // Set a voice channel as the "big ben clock" channel
             if (message.content.trim().startsWith(prefix)) {
-                // Fetch the channel name fromm the arguments
-                let channelName = message.content.replace(`${prefix} `, "").trim();
+                // Fetch the arguments of the command
+                const args = message.content.replace(`${prefix} `, "").split(" ");
 
-                // Attempt to find the voice channel
-                let voiceChannel = message.guild.channels.find((channel) => {
-                    return channel.name === channelName && channel.type === "voice";
-                });
+                // Fetch the command
+                const command = args.shift().toLowerCase().replace(prefix, '');
 
-                if (voiceChannel) {
-                    // Remove any existing channels
-                    this.database.run("DELETE FROM servers WHERE server_id = ?", message.guild.id);
+                // Set channel command
+                if (command === "set") {
+                    // Fetch the channel name
+                    let channelName = args.join(' ');
 
-                    // Add the channel
-                    this.database.run("INSERT INTO servers (server_id, channel_id, created_at)VALUES(?, ?, ?)", message.guild.id, voiceChannel.id, moment().format('Y-m-d H:m:s'));
+                    // Attempt to find the voice channel
+                    let voiceChannel = message.guild.channels.find((channel) => {
+                        return channel.name === channelName && channel.type === "voice";
+                    });
 
-                    // Notify the channel
-                    message.channel.send(`Set '${voiceChannel.name}' as big ben channel`);
-                } else {
-                    message.channel.send(`Could not find voice channel '${channelName}'`);
+                    if (voiceChannel) {
+                        // Remove any existing channels
+                        this.database.run("DELETE FROM servers WHERE server_id = ?", message.guild.id);
+
+                        // Add the channel
+                        this.database.run("INSERT INTO servers (server_id, channel_id, created_at)VALUES(?, ?, ?)", message.guild.id, voiceChannel.id, moment().format('Y-m-d H:m:s'));
+
+                        // Notify the channel
+                        message.channel.send(`Set '${voiceChannel.name}' as big ben voice channel`);
+                    } else {
+                        message.channel.send(`Could not find voice channel '${channelName}'`);
+                    }
                 }
             }
         });
