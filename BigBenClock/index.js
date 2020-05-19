@@ -87,10 +87,10 @@ class BigBenClock {
 
                     if (voiceChannel) {
                         // Remove any existing channels
-                        this.database.run("DELETE FROM servers WHERE server_id = ?", message.guild.id);
+                        this.database.deleteServer(message.guild.id);
 
                         // Add the channel
-                        this.database.run("INSERT INTO servers (server_id, channel_id, created_at)VALUES(?, ?, ?)", message.guild.id, voiceChannel.id, moment().format('Y-m-d H:m:s'));
+                        this.database.addServer(message.guild.id, voiceChannel.id);
 
                         // Notify the channel
                         message.channel.send(`Set '${voiceChannel.name}' as big ben voice channel`);
@@ -99,7 +99,7 @@ class BigBenClock {
                     }
                 } else if (command === "frequency") {
                     // Find the servers record
-                    this.database.all("SELECT * FROM servers WHERE server_id = ?", message.guild.id).then((response) => {
+                    this.database.getServer(message.guild.id).then((response) => {
                         let server = response[0];
 
                         if (server && !_.isEmpty(server.channel_id)) {
@@ -107,7 +107,7 @@ class BigBenClock {
 
                             // Update the frequency
                             if (_.inRange(frequency, 1, 13)) {
-                                this.database.run("UPDATE servers SET frequency = ? WHERE server_id = ?", frequency, message.guild.id);
+                                this.database.setServerFrequency(message.guild.id, frequency);
 
                                 // Calculate the times that are now active
                                 let times = _.range(1, 13).filter((hour) => hour % frequency === 0);
@@ -139,7 +139,7 @@ class BigBenClock {
             console.info(`Running schedule at ${moment().format('Y-m-d H:m:s')}`);
 
             // Get all servers
-            this.database.all("SELECT * FROM servers").then((servers) => {
+            this.database.getAllServers().then((servers) => {
                 // Loop through the servers
                 servers.forEach((server) => {
                     // Attempt to find the guild
