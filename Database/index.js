@@ -1,5 +1,4 @@
 const { Client } = require('pg')
-const moment = require('moment');
 
 class Database {
     /**
@@ -32,7 +31,7 @@ class Database {
      * @returns {Promise<Statement>}
      */
     addServer(serverId, channelId) {
-        return this.db.query("INSERT INTO servers (server_id, channel_id, created_at)VALUES($1, $2, $3)", [serverId, channelId, moment().format('Y-m-d H:m:s')]);
+        return this.db.query("INSERT INTO servers (server_id, channel_id)VALUES($1, $2)", [serverId, channelId]);
     }
 
     /**

@@ -87,10 +87,12 @@ class BigBenClock {
                         this.database.deleteServer(message.guild.id);
 
                         // Add the channel
-                        this.database.addServer(message.guild.id, voiceChannel.id);
-
-                        // Notify the channel
-                        message.channel.send(`Set '${voiceChannel.name}' as big ben voice channel`);
+                        this.database.addServer(message.guild.id, voiceChannel.id).then(() => {
+                            message.channel.send(`Set '${voiceChannel.name}' as big ben voice channel`);
+                        }).catch((err) => {
+                            message.channel.send(`Oh no! Something went wrong while setting your channel`);
+                            console.error(err);
+                        });
                     } else {
                         message.channel.send(`Could not find voice channel '${channelName}'`);
                     }
