@@ -10,7 +10,7 @@ Once you have the dependencies, you wil need to create a new application on disc
 
 Once you have your Discord Bot set up, rename the `.env.example` file (located in the root directory) to `.env` and set the `BOT_TOKEN` to your Discord applications bot token and update the `DATABASE_URL` to match your PostgresSQL information.
 
-Now, run `npm run start` to start the bot.
+Now, run `npm run migrate up` and then `npm run start` to start the bot.
 
 You will need to invite the bot to your server. The bot needs at least "Connect" and "Speak" permissions.
 
