@@ -119,8 +119,36 @@ class BigBenClock {
                             message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
                         }
                     });
+                } else if (command === "test") {
+                    // Find the servers record
+                    this.database.getServer(message.guild.id).then((response) => {
+                        let server = response.rows[0];
+
+                        if (server && !_.isEmpty(server.channel_id)) {
+                            message.channel.send(`Attempting to join channel...`);
+
+                            message.channel.join().then((connection) => {
+                                const dispatcher = connection.playFile("./Assets/test.mp3");
+
+                                message.channel.send(`Attempting to play test sound...`);
+
+                                // Leave the channel once we're done
+                                dispatcher.on("end", () => {
+                                    message.channel.send(`Leaving...`);
+
+                                    message.channel.leave();
+                                });
+                            });
+                        } else {
+                            if (server && _.isEmpty(server.channel_id)) {
+                                message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
+                            } else {
+                                message.channel.send(`Could not find your server. Please kick the big ben clock bot and re-invite him to your server.`);
+                            }
+                        }
+                    });
                 } else {
-                    message.channel.send("Available commands:\n\n!bigbenclock set <voice channel name>\n!bigbenclock frequency <1-12>");
+                    message.channel.send("Available commands:\n\n!bigbenclock set <voice channel name>\n!bigbenclock frequency <1-12>\n!bigbenclock test");
                 }
             }
         });
