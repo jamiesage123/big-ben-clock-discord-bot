@@ -125,26 +125,34 @@ class BigBenClock {
                         let server = response.rows[0];
 
                         if (server && !_.isEmpty(server.channel_id)) {
-                            message.channel.send(`Attempting to join channel...`);
+                            message.channel.send(`Attempting to join server ${message.guild.id}...`);
 
-                            message.channel.join().then((connection) => {
-                                const dispatcher = connection.playFile("./Assets/test.mp3");
+                            // Attempt to find the guild
+                            let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
 
-                                message.channel.send(`Attempting to play test sound...`);
+                            if (guild) {
+                                // Attempt to find the channel
+                                let channel = guild.channels.find((channel) => channel.id === server.channel_id);
 
-                                // Leave the channel once we're done
-                                dispatcher.on("end", () => {
-                                    message.channel.send(`Leaving...`);
+                                message.channel.send(`Attempting to join channel ${channel.id} on server ${guild.id}`);
 
-                                    message.channel.leave();
+                                channel.join().then((connection) => {
+                                    const dispatcher = connection.playFile("./Assets/test.mp3");
+
+                                    message.channel.send(`Attempting to play test sound in ${channel.id}...`);
+
+                                    // Leave the channel once we're done
+                                    dispatcher.on("end", () => {
+                                        message.channel.send(`Leaving...`);
+
+                                        channel.leave();
+                                    });
                                 });
-                            });
-                        } else {
-                            if (server && _.isEmpty(server.channel_id)) {
-                                message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
                             } else {
-                                message.channel.send(`Could not find your server. Please kick the big ben clock bot and re-invite him to your server.`);
+                                message.channel.send("Could not find your server, please kick and re-invite the Big Ben Clock bot.");
                             }
+                        } else {
+                            message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
                         }
                     });
                 } else {
