@@ -62,6 +62,16 @@ class Database {
     }
 
     /**
+     * Set the mute until date
+     * @param serverId
+     * @param date
+     * @returns {Promise<Statement>}
+     */
+    setMuteUntil(serverId, date) {
+        return this.db.query("UPDATE servers SET mute_until = $1 WHERE server_id = $2", [date, serverId]);
+    }
+
+    /**
      * Delete a server
      * @param serverId
      * @returns {Promise<Statement>}

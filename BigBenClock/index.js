@@ -137,16 +137,22 @@ class BigBenClock {
                                 message.channel.send(`Attempting to join channel ${channel.id} on server ${guild.id}`);
 
                                 channel.join().then((connection) => {
-                                    const dispatcher = connection.playFile("./Assets/test.mp3");
-
-                                    message.channel.send(`Attempting to play test sound in ${channel.id}...`);
-
-                                    // Leave the channel once we're done
-                                    dispatcher.on("end", () => {
+                                    if (server.mute_until && typeof server.mute_until === "string" && moment(server.mute_until).isAfter(moment())) {
+                                        message.channel.send(`Server ${guild.id} is muted until ${moment(server.mute_until).format('YYYY-MM-DD HH:mm:ss')}`);
                                         message.channel.send(`Leaving...`);
-
                                         channel.leave();
-                                    });
+                                    } else {
+                                        const dispatcher = connection.playFile("./Assets/test.mp3");
+
+                                        message.channel.send(`Attempting to play test sound in ${channel.id}...`);
+
+                                        // Leave the channel once we're done
+                                        dispatcher.on("end", () => {
+                                            message.channel.send(`Leaving...`);
+
+                                            channel.leave();
+                                        });
+                                    }
                                 });
                             } else {
                                 message.channel.send("Could not find your server, please kick and re-invite the Big Ben Clock bot.");
@@ -155,8 +161,52 @@ class BigBenClock {
                             message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
                         }
                     });
+                } else if (command === "mute") {
+                    // Find the servers record
+                    this.database.getServer(message.guild.id).then((response) => {
+                        let server = response.rows[0];
+
+                        if (server && !_.isEmpty(server.channel_id)) {
+                            let until = args.join().trim();
+
+                            // Attempt to parse the until date
+                            switch (until) {
+                                case 'tomorrow':
+                                    until = moment().endOf('day');
+                                    break;
+                                case 'week':
+                                    until = moment().add(1, 'week').endOf('day');
+                                    break;
+                                default:
+                                    if (until.length === 0) {
+                                        until = moment().endOf('day');
+                                    } else {
+                                        until = moment(until).startOf('day');
+                                    }
+                            }
+
+                            this.database.setMuteUntil(message.guild.id, until.format('YYYY-MM-DD HH:mm:ss'));
+
+                            message.channel.send(`Muting Big Ben Clock until ${until.format('dddd, MMMM Do YYYY, HH:mm:ss')}. Use "!bigbenclock unmute" to unmute sooner.`);
+                        } else {
+                            message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
+                        }
+                    });
+                } else if (command === "unmute") {
+                    // Find the servers record
+                    this.database.getServer(message.guild.id).then((response) => {
+                        let server = response.rows[0];
+
+                        if (server && !_.isEmpty(server.channel_id)) {
+                            this.database.setMuteUntil(message.guild.id, null);
+
+                            message.channel.send(`Unmuted Big Ben Clock.`);
+                        } else {
+                            message.channel.send(`You must set a voice channel before setting a frequency (!bigbenclock set <voice channel name>)`);
+                        }
+                    });
                 } else {
-                    message.channel.send("Available commands:\n\n!bigbenclock set <voice channel name>\n!bigbenclock frequency <1-12>\n!bigbenclock test");
+                    message.channel.send("Available commands:\n\n!bigbenclock set <voice channel name>\n!bigbenclock frequency <1-12>\n!bigbenclock test\n!bigbenclock mute <tomorrow/week/specific date (format: YYYY-MM-DD)>\n!bigbenclock unmute");
                 }
             }
         });
@@ -184,6 +234,11 @@ class BigBenClock {
 
                     // Determine if we should play a chime based on the servers frequency setting
                     let playChimes = server.frequency !== null ? hour % server.frequency === 0 : true;
+
+                    // Determine if we should play a chime base do the servers "mute until" setting
+                    if (server.mute_until && typeof server.mute_until === "string" && moment(server.mute_until).isAfter(moment())) {
+                        playChimes = false;
+                    }
 
                     if (guild && playChimes) {
                         // Find the channel in the server
@@ -213,7 +268,7 @@ class BigBenClock {
                         }
                     } else {
                         if (guild) {
-                            console.info(`Deferring chime on server ${guild.id}. Frequency: ${server.frequency}`);
+                            console.info(`Deferring chime on server ${guild.id}. Frequency: ${server.frequency}. Mute Until: ${server.mute_until}`);
                         } else {
                             // TODO: Delete record as server no longer exists
                             console.info(`Server ${server.id} does not exist`);

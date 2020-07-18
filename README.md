@@ -17,3 +17,6 @@ You will need to invite the bot to your server. The bot needs at least "Connect"
 ## Commands
 `!bigbenclock set <voice channel name>` - Set a voice channel as the "Big Ben clock voice channel"  
 `!bigbenclock frequency <1-12>` - Set the frequency of Big Bens chimes
+`!bigbenclock test` - Play the test sound and output debug to the chat
+`!bigbenclock mute <tomorrow/week/specific date (format: YYYY-MM-DD)>` - Mute Big Ben Clock until a specific date
+`!bigbenclock unmute` - Unmute Big Ben Clock
