@@ -14,7 +14,7 @@
     },
     "author": "Jamie Sage (https://jamiesage.co.uk)",
     "dependencies": {
-        "discord.js": "^11.5.1",
+        "discord.js": "12.5.3",
         "dotenv": "^8.2.0",
         "lodash": "^4.17.19",
         "moment": "^2.25.3",
