@@ -128,7 +128,7 @@ class BigBenClock {
                             message.channel.send(`Attempting to join server ${message.guild.id}...`);
 
                             // Attempt to find the guild
-                            let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
+                            let guild = this.bot.guilds.cache.find((guild) => guild.id === server.server_id);
 
                             if (guild) {
                                 // Attempt to find the channel
@@ -230,7 +230,7 @@ class BigBenClock {
                 // Loop through the servers
                 servers.forEach((server) => {
                     // Attempt to find the guild
-                    let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
+                    let guild = this.bot.guilds.cache.find((guild) => guild.id === server.server_id);
 
                     // Determine if we should play a chime based on the servers frequency setting
                     let playChimes = server.frequency !== null ? hour % server.frequency === 0 : true;
