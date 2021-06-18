@@ -78,7 +78,7 @@ class BigBenClock {
                     let channelName = args.join(' ');
 
                     // Attempt to find the voice channel
-                    let voiceChannel = message.guild.channels.find((channel) => {
+                    let voiceChannel = member.guild.channels.cache.find((channel) => {
                         return channel.name === channelName && channel.type === "voice";
                     });
 
