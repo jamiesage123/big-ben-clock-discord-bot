@@ -3,4 +3,5 @@ Procfile
 .gitignore
 .git
 .env.example
+.env
 LICENSE
