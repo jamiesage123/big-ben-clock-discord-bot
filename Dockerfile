@@ -15,6 +15,7 @@ RUN apk add --no-cache python3 && \
 
 RUN apk add --update alpine-sdk
 RUN npm install
+RUN npm i ffmpeg-static
 
 ENV BOT_TOKEN=
 ENV DATABASE_URL=
