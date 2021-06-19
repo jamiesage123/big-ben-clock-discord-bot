@@ -147,7 +147,7 @@ class BigBenClock {
                                         message.channel.send(`Attempting to play test sound in ${channel.id}...`);
 
                                         // Leave the channel once we're done
-                                        dispatcher.on("end", () => {
+                                        dispatcher.on('finish', () => {
                                             message.channel.send(`Leaving...`);
 
                                             channel.leave();
