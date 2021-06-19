@@ -132,7 +132,7 @@ class BigBenClock {
 
                             if (guild) {
                                 // Attempt to find the channel
-                                let channel = guild.channels.find((channel) => channel.id === server.channel_id);
+                                let channel = guild.channels.cache.find((channel) => channel.id === server.channel_id);
 
                                 message.channel.send(`Attempting to join channel ${channel.id} on server ${guild.id}`);
 
@@ -242,7 +242,7 @@ class BigBenClock {
 
                     if (guild && playChimes) {
                         // Find the channel in the server
-                        let channel = guild.channels.find((channel) => channel.id === server.channel_id);
+                        let channel = guild.channels.cache.find((channel) => channel.id === server.channel_id);
 
                         console.info(`Attempting to join channel ${channel.id} on server ${guild.id}`);
 
