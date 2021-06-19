@@ -142,7 +142,7 @@ class BigBenClock {
                                         message.channel.send(`Leaving...`);
                                         channel.leave();
                                     } else {
-                                        const dispatcher = connection.playFile("./Assets/test.mp3");
+                                        const dispatcher = connection.play("./Assets/test.mp3");
 
                                         message.channel.send(`Attempting to play test sound in ${channel.id}...`);
 
@@ -249,7 +249,7 @@ class BigBenClock {
                         if (channel && channel.members.array().length > 0) {
                             // Play the chime
                             channel.join().then((connection) => {
-                                const dispatcher = connection.playFile(`./Assets/${hour}.mp3`);
+                                const dispatcher = connection.play(`./Assets/${hour}.mp3`);
 
                                 console.info(`Playing ./Assets/${hour}.mp3 in channel ${channel.id}`);
 
