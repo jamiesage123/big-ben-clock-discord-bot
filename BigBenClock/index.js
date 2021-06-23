@@ -254,7 +254,7 @@ class BigBenClock {
                                 console.info(`Playing ./Assets/${hour}.mp3 in channel ${channel.id}`);
 
                                 // Leave the channel once we're done
-                                dispatcher.on("end", () => {
+                                dispatcher.on("finish", () => {
                                     channel.leave();
                                 });
                             });
