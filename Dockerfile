@@ -18,5 +18,6 @@ RUN npm install
 
 ENV BOT_TOKEN=
 ENV DATABASE_URL=
+ENV DATABASE_SECURE=
 
 CMD npm run migrate up && npm run start

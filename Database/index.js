@@ -5,9 +5,12 @@ class Database {
      * Database constructor
      * @param connectionString
      */
-    constructor(connectionString) {
+    constructor(connectionString, options) {
         // connection URI
         this.connectionString = connectionString;
+
+        // Database client options
+        this.options = options || {};
 
         // Database instance
         this.db = null;
@@ -18,7 +21,7 @@ class Database {
      * @returns {Promise<void>}
      */
     async init() {
-        this.db = new Client({ connectionString: this.connectionString });
+        this.db = new Client(Object.assign({ connectionString: this.connectionString }, this.options));
 
         // Attempt to connect
         await this.db.connect();
