@@ -78,7 +78,7 @@ class BigBenClock {
                     let channelName = args.join(' ');
 
                     // Attempt to find the voice channel
-                    let voiceChannel = message.guild.channels.find((channel) => {
+                    let voiceChannel = message.guild.channels.cache.find((channel) => {
                         return channel.name === channelName && channel.type === "voice";
                     });
 
@@ -128,11 +128,11 @@ class BigBenClock {
                             message.channel.send(`Attempting to join server ${message.guild.id}...`);
 
                             // Attempt to find the guild
-                            let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
+                            let guild = this.bot.guilds.cache.find((guild) => guild.id === server.server_id);
 
                             if (guild) {
                                 // Attempt to find the channel
-                                let channel = guild.channels.find((channel) => channel.id === server.channel_id);
+                                let channel = guild.channels.cache.find((channel) => channel.id === server.channel_id);
 
                                 message.channel.send(`Attempting to join channel ${channel.id} on server ${guild.id}`);
 
@@ -142,12 +142,12 @@ class BigBenClock {
                                         message.channel.send(`Leaving...`);
                                         channel.leave();
                                     } else {
-                                        const dispatcher = connection.playFile("./Assets/test.mp3");
+                                        const dispatcher = connection.play("./Assets/test.mp3");
 
                                         message.channel.send(`Attempting to play test sound in ${channel.id}...`);
 
                                         // Leave the channel once we're done
-                                        dispatcher.on("end", () => {
+                                        dispatcher.on('finish', () => {
                                             message.channel.send(`Leaving...`);
 
                                             channel.leave();
@@ -230,7 +230,7 @@ class BigBenClock {
                 // Loop through the servers
                 servers.forEach((server) => {
                     // Attempt to find the guild
-                    let guild = this.bot.guilds.find((guild) => guild.id === server.server_id);
+                    let guild = this.bot.guilds.cache.find((guild) => guild.id === server.server_id);
 
                     // Determine if we should play a chime based on the servers frequency setting
                     let playChimes = server.frequency !== null ? hour % server.frequency === 0 : true;
@@ -242,14 +242,14 @@ class BigBenClock {
 
                     if (guild && playChimes) {
                         // Find the channel in the server
-                        let channel = guild.channels.find((channel) => channel.id === server.channel_id);
+                        let channel = guild.channels.cache.find((channel) => channel.id === server.channel_id);
 
                         console.info(`Attempting to join channel ${channel.id} on server ${guild.id}`);
 
                         if (channel && channel.members.array().length > 0) {
                             // Play the chime
                             channel.join().then((connection) => {
-                                const dispatcher = connection.playFile(`./Assets/${hour}.mp3`);
+                                const dispatcher = connection.play(`./Assets/${hour}.mp3`);
 
                                 console.info(`Playing ./Assets/${hour}.mp3 in channel ${channel.id}`);
 
