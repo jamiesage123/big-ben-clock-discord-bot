@@ -15,7 +15,7 @@ class BigBenClock {
         this.botToken = process.env.BOT_TOKEN;
 
         // Database instance
-        this.database = new Database(process.env.DATABASE_URL);
+        this.database = new Database(process.env.DATABASE_URL, { ssl: process.env.DATABASE_SECURE });
 
         // Create the bot
         this.bot = new Discord.Client();

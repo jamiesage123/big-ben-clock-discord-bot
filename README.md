@@ -5,7 +5,7 @@ This repository contains the source code for a discord bot that chimes every hou
 If you want to run the big-ben clock discord bot on docker you can do that with the following command:
    
 ```
-docker run --name BigBen-Bot --env BOT_TOKEN="<Replace with Discord-Bot Token>" --env DATABASE_URL="postgres://username:password@IP/Localhost:5432/DatabaseName" kippenhof/bigbendiscord
+docker run --name BigBen-Bot --env BOT_TOKEN="<Replace with Discord-Bot Token>" --env DATABASE_URL="postgres://username:password@IP/Localhost:5432/DatabaseName" --env DATABASE_SECURE=true kippenhof/bigbendiscord
 ``` 
 
 
