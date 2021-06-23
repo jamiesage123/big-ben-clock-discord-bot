@@ -2,15 +2,19 @@
 This repository contains the source code for a discord bot that chimes every hour of the day.
 
 ## Installation with Docker
-If you want to run the big-ben clock discord bot on docker you can do that with the following Command:
+If you want to run the big-ben clock discord bot on docker you can do that with the following command:
    
-`docker run --name BigBen-Bot --env BOT_TOKEN="<Replace with Discord-Bot Token>" --env DATABASE_URL="postgres://username:password@IP/Localhost:5432/DatabaseName" kippenhof/bigbendiscord` 
+```
+docker run --name BigBen-Bot --env BOT_TOKEN="<Replace with Discord-Bot Token>" --env DATABASE_URL="postgres://username:password@IP/Localhost:5432/DatabaseName" kippenhof/bigbendiscord
+``` 
 
 
 ## Installation
 This bot is written to run on top of node.js. Please see [https://nodejs.org/](https://nodejs.org/en/download/) for more information on node.js. You will also need PostgreSQL.
 
 Run `npm install` in the root directory to install all the bots dependencies.
+
+On windows, you may need to install windows build tools (i.e `windows npm install -g windows-build-tools`)
 
 Once you have the dependencies, you wil need to create a new application on discord along with a bot for the application. This can be done via [Discord Developer Portal](https://discordapp.com/developers/).
 
@@ -22,7 +26,7 @@ You will need to invite the bot to your server. The bot needs at least "Connect"
 
 ## Commands
 `!bigbenclock set <voice channel name>` - Set a voice channel as the "Big Ben clock voice channel"  
-`!bigbenclock frequency <1-12>` - Set the frequency of Big Bens chimes
-`!bigbenclock test` - Play the test sound and output debug to the chat
-`!bigbenclock mute <tomorrow/week/specific date (format: YYYY-MM-DD)>` - Mute Big Ben Clock until a specific date
-`!bigbenclock unmute` - Unmute Big Ben Clock
+`!bigbenclock frequency <1-12>` - Set the frequency of Big Bens chimes  
+`!bigbenclock test` - Play the test sound and output debug to the chat  
+`!bigbenclock mute <tomorrow/week/specific date (format: YYYY-MM-DD)>` - Mute Big Ben Clock until a specific date  
+`!bigbenclock unmute` - Unmute Big Ben Clock  
